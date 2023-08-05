@@ -2,7 +2,7 @@
 title: "Data Quality Report"
 output:
   html_document: default
-date: "2023-08-04"
+date: "`r Sys.Date()`"
 params:
   district: NA
 ---
@@ -18,6 +18,7 @@ This is an automated report highlighting Facilities and the possible data elemen
 ```{r}
 library(tidyverse)
 library(kableExtra)
+library(knitr)
 library(readr)
 library(here)
 library(gsheet)
@@ -73,8 +74,17 @@ There was a total of `r length(facilites)` with possible outlines as seen below;
 
 ```{r}
 table %>%
-  kbl() %>%
-  kable_paper(bootstrap_options = "striped", full_width = T) 
+  kable(
+    format = "latex",
+    align = "l",
+    booktabs = TRUE,
+    linesep = "",
+  ) %>%
+  kable_styling(
+    position = "left",
+    latex_options = c("stripped","repeat_header"),
+    stripe_color = "gray!15"
+  )
 ```
 
 
@@ -93,8 +103,17 @@ sum <- data %>%
         Month = period)
 
 sum  %>%
-  kbl() %>%
-  kable_paper(bootstrap_options = "striped", full_width = T) 
+  kable(
+    format = "latex",
+    align = "l",
+    booktabs = TRUE,
+    linesep = "",
+  ) %>%
+  kable_styling(
+    position = "left",
+    latex_options = c("stripped","repeat_header"),
+    stripe_color = "gray!15"
+  )
 
 ```
 
