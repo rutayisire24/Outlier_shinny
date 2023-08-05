@@ -240,7 +240,7 @@ server <- function(input, output) {
 
       #params <- list(district = input$district)
       
-      out <- render("data_quality.Rmd", 
+      out <- rmarkdown::render("data_quality.Rmd", 
                     params = list(district = input$district),
                     switch(input$format,
                            PDF = pdf_document(), 
