@@ -8,7 +8,7 @@ params:
   district: NA
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = FALSE,message = FALSE)
 ```
 
@@ -58,10 +58,12 @@ plot_data <- data %>%
       select(-None) %>%
       filter(Outlier > 0) %>%
       dplyr::arrange(desc(Outlier))  
-    
+  
 plot_data %>%
-      ggplot(aes(facility,y = Outlier))+
+  slice_max(Outlier,n=20)%>%
+      ggplot(aes(x  = reorder(facility,Outlier),y = Outlier))+
       geom_col(fill = "#264653")+
+  coord_flip()+
   labs(x = "", y = "Counts")+
   theme_bw()
   
@@ -84,7 +86,7 @@ theme_vanilla(ft)
 
 sum <- data %>%
       filter(flag == "Outlier") %>%
-      select(-c(facility,flag,region,district)) %>%
+      select(-c(flag,region,district)) %>%
       relocate(indicator , .before = period) %>%
       dplyr::arrange(desc(period)) %>%
       rename(
