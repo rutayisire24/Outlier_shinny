@@ -1,0 +1,13 @@
+name: Data_Quality
+title: Data_Quality
+username: 8a6gxo-rutayisire-meddy
+account: 8a6gxo-rutayisire-meddy
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9554460
+bundleId: 7533856
+url: https://8a6gxo-rutayisire-meddy.shinyapps.io/Data_Quality/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: data_df.csv|data_facility.xlsx|data_quality.html|facility_flagger.R

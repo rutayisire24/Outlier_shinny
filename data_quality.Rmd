@@ -1,0 +1,91 @@
+---
+title: "Data Quality Report"
+output:
+  html_document: default
+date: "2023-08-04"
+params:
+  district: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE)
+```
+
+### Data Quality `r params$district` 
+
+This is an automated report highlighting Facilities and the possible data elements that could be outliers that need to be verified. 
+
+```{r}
+library(tidyverse)
+library(DT)
+library(readr)
+library(plotly)
+library(here)
+
+data <- readRDS(here("impute.rds"))
+
+table <- data %>%
+      group_by(facility,flag)  %>%
+      count() %>%
+      pivot_wider(names_from = flag,values_from = n) %>%
+      rowwise() %>%
+      mutate(total = sum(None,Outlier),
+             Percentage_outliers = round(Outlier/total*100))%>%
+      select(-None) %>%
+      filter(Outlier > 0) %>%
+    dplyr::arrange(desc(Outlier)) %>%
+      rename(
+        `Possible Outliers` = Outlier,
+        `Total Records` = total, 
+        `% Outliers` = Percentage_outliers) 
+
+facilites <- unique(table$facility)
+
+```
+
+```{r}
+
+plot_data <- data %>%
+      group_by(facility,flag)  %>%
+      count() %>%
+      pivot_wider(names_from = flag,values_from = n) %>%
+      rowwise() %>%
+      mutate(total = sum(None,Outlier),
+             Percentage_outliers = round(Outlier/total*100))%>%
+      select(-None) %>%
+      filter(Outlier > 0) %>%
+      dplyr::arrange(desc(Outlier))  
+    
+    plot_ly(plot_data,x = ~facility,y = ~Outlier, type = 'bar') %>%
+      layout(xaxis = list(categoryorder = "total descending"))
+```
+
+
+### Summary of Facilities that have possible Outliers
+There was a total of `r length(facilites)` with possible outlines as seen below; 
+
+
+```{r}
+DT::datatable(table)
+```
+
+
+## Breakdown of the Possible Outliers per Facility 
+```{r}
+
+sum <- data %>%
+      filter(flag == "Outlier") %>%
+      select(-c(facility,flag,region,district)) %>%
+      relocate(indicator , .before = period) %>%
+      dplyr::arrange(desc(period)) %>%
+      rename(
+        `Suggested Imputation` = variable_clean, 
+        `Possible Outlier` = variable,
+        `Data Element` = indicator,
+        Month = period)
+
+DT::datatable(sum)
+
+```
+
+
