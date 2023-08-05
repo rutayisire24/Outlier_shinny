@@ -17,19 +17,14 @@ This is an automated report highlighting Facilities and the possible data elemen
 
 ```{r}
 library(tidyverse)
-library(DT)
+library(kableExtra)
 library(readr)
-library(plotly)
 library(here)
-```
+library(gsheet)
 
-
-```{r}
 #data <- read_rds("impute.rds")
-pacman::p_load(gsheet)
 
 data <- gsheet2tbl('https://drive.google.com/open?id= 1wewNRiECpefjBjhtaS4Mlp5mnhTpYDa8SiF1agcs4Kk')
-
 
 table <- data %>%
       group_by(facility,flag)  %>%
@@ -63,8 +58,12 @@ plot_data <- data %>%
       filter(Outlier > 0) %>%
       dplyr::arrange(desc(Outlier))  
     
-    plot_ly(plot_data,x = ~facility,y = ~Outlier, type = 'bar') %>%
-      layout(xaxis = list(categoryorder = "total descending"))
+plot_data %>%
+      ggplot(aes(facility,y = Outlier))+
+      geom_col(fill = "#264653")+
+  labs(x = "", y = "Counts")+
+  theme_bw()
+  
 ```
 
 
@@ -73,7 +72,9 @@ There was a total of `r length(facilites)` with possible outlines as seen below;
 
 
 ```{r}
-DT::datatable(table)
+table %>%
+  kbl() %>%
+  kable_paper(bootstrap_options = "striped", full_width = T) 
 ```
 
 
@@ -91,7 +92,9 @@ sum <- data %>%
         `Data Element` = indicator,
         Month = period)
 
-DT::datatable(sum)
+sum  %>%
+  kbl() %>%
+  kable_paper(bootstrap_options = "striped", full_width = T) 
 
 ```
 
