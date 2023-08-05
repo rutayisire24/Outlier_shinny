@@ -22,7 +22,7 @@ library(readr)
 library(plotly)
 library(here)
 
-data <- readRDS("impute.rds")
+data <- read_rds("impute.rds")
 
 table <- data %>%
       group_by(facility,flag)  %>%
