@@ -6,6 +6,7 @@ library(tidyverse)
 library(magrittr)
 library(readr)
 library(plotly)
+library(rmarkdown)
 
 data_df <- read_rds("impute.rds")
 
