@@ -1,7 +1,8 @@
 ---
 title: "Data Quality Report"
 output:
-  html_document: default
+  pdf_document:
+    latex_engine: xelatex
 date: "`r Sys.Date()`"
 params:
   district: NA
@@ -17,8 +18,7 @@ This is an automated report highlighting Facilities and the possible data elemen
 
 ```{r}
 library(tidyverse)
-library(kableExtra)
-library(knitr)
+library(flextable)
 library(readr)
 library(here)
 library(gsheet)
@@ -73,18 +73,9 @@ There was a total of `r length(facilites)` with possible outlines as seen below;
 
 
 ```{r}
-table %>%
-  kable(
-    format = "latex",
-    align = "l",
-    booktabs = TRUE,
-    linesep = "",
-  ) %>%
-  kable_styling(
-    position = "left",
-    latex_options = c("stripped","repeat_header"),
-    stripe_color = "gray!15"
-  )
+ft <- flextable(table)
+ft <- autofit(ft)
+theme_vanilla(ft)
 ```
 
 
@@ -102,18 +93,9 @@ sum <- data %>%
         `Data Element` = indicator,
         Month = period)
 
-sum  %>%
-  kable(
-    format = "latex",
-    align = "l",
-    booktabs = TRUE,
-    linesep = "",
-  ) %>%
-  kable_styling(
-    position = "left",
-    latex_options = c("stripped","repeat_header"),
-    stripe_color = "gray!15"
-  )
+ft <- flextable(sum)
+ft <- autofit(ft)
+theme_vanilla(ft)
 
 ```
 
