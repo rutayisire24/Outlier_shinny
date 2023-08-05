@@ -9,7 +9,7 @@ params:
 ---
 
 ```{r setup, include=FALSE, message=FALSE}
-knitr::opts_chunk$set(echo = FALSE,message = FALSE)
+knitr::opts_chunk$set(echo = FALSE,message = FALSE, warning = FALSE)
 ```
 
 ### Data Quality `r params$district` 
@@ -46,6 +46,7 @@ facilites <- unique(table$facility)
 
 ```
 
+### Facilities with the highest counts of Outliers
 ```{r}
 
 plot_data <- data %>%
@@ -56,11 +57,11 @@ plot_data <- data %>%
       mutate(total = sum(None,Outlier),
              Percentage_outliers = round(Outlier/total*100))%>%
       select(-None) %>%
-      filter(Outlier > 0) %>%
-      dplyr::arrange(desc(Outlier))  
+      filter(Outlier > 0)   
   
 plot_data %>%
-  slice_max(Outlier,n=20)%>%
+  dplyr::arrange(desc(Outlier))%>%
+   slice_head(n = 10)%>%
       ggplot(aes(x  = reorder(facility,Outlier),y = Outlier))+
       geom_col(fill = "#264653")+
   coord_flip()+
@@ -96,7 +97,6 @@ sum <- data %>%
         Month = period)
 
 ft <- flextable(sum)
-ft <- autofit(ft)
 theme_vanilla(ft)
 
 ```
