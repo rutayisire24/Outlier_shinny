@@ -26,7 +26,10 @@ library(here)
 
 ```{r}
 #data <- read_rds("impute.rds")
-data<- read_csv("impute.csv")
+pacman::p_load(gsheet)
+
+data <- gsheet2tbl('https://drive.google.com/open?id= 1wewNRiECpefjBjhtaS4Mlp5mnhTpYDa8SiF1agcs4Kk')
+
 
 table <- data %>%
       group_by(facility,flag)  %>%
