@@ -21,7 +21,10 @@ library(DT)
 library(readr)
 library(plotly)
 library(here)
+```
 
+
+```{r}
 data <- read_rds("impute.rds")
 
 table <- data %>%
