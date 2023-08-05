@@ -60,8 +60,9 @@ plot_data <- data %>%
       filter(Outlier > 0)   
   
 plot_data %>%
+  ungroup() %>%
   dplyr::arrange(desc(Outlier))%>%
-   slice_head(n = 10)%>%
+   slice_head(n = 15)%>%
       ggplot(aes(x  = reorder(facility,Outlier),y = Outlier))+
       geom_col(fill = "#264653")+
   coord_flip()+
@@ -97,6 +98,7 @@ sum <- data %>%
         Month = period)
 
 ft <- flextable(sum)
+ft <- autofit(ft)
 theme_vanilla(ft)
 
 ```
