@@ -1,0 +1,4 @@
+- source: Documentation.qmd
+  quarto-pub:
+    - id: 24151727-ffe1-4986-9b4e-fed35c161afc
+      url: 'https://quartopub.com/sites/rmeddy/documentationdata-quality-tool'

@@ -1,0 +1,59 @@
+---
+title: "HOT Documentation"
+title-block-banner: true
+execute: 
+  echo: False
+  warning: false
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 2
+    toc-location: left
+    number-sections: true
+    number-depth: 3
+    theme: flatly
+    smooth-scroll: true
+author: Rutayisire Meddy
+editor: visual
+---
+
+![](www/Logo.png){fig-align="center" width="111"}
+
+# HMIS Observation ToolKit(HOT)
+
+## Why HOT , Why Data Quality Checks?
+
+Health information systems are essential tools for collecting, storing, and managing health data.
+
+The quality of data in HIS can be compromised by a number of factors, including human error, system errors, and data corruption. Data quality checks can identify and correct errors in data, as well as identify trends and patterns that may indicate problems with the system.
+
+Data quality checks should be performed on a regular basis to ensure the quality of data in HIS. Conducting regular data quality checks can improve the accuracy, reliability, and usability of data in health information systems, which can lead to better patient care and public health outcomes.
+
+HOT (HMIS Observation ToolKit) aids this process by automating detection of possible outliers using proven recent practices in Outlier detection.
+
+## How does it work?
+
+HOT leverages on the Boxplot technique to spot possible outliers.
+
+Box plots are effective tools for identifying outliers in a dataset. Outliers are data points that significantly differ from the rest of the values and can distort the overall analysis.
+
+In a box plot, outliers are visually detected as individual data points lying beyond the "whiskers" - the lines that extend from the box to represent the minimum and maximum values within a certain range, typically 1.5 times the interquartile range (IQR).
+
+![Boxplot in Outlier Detection](1_0MPDTLn8KoLApoFvI0P2vQ.png){fig-align="center"}
+
+Any data points beyond these whiskers are considered outliers and are shown separately as dots. This allows analysts to quickly spot unusual observations that might require further investigation, helping ensure the integrity and accuracy of the data analysis.
+
+HOT automates this process by going over all the records per data element reported per facility and per district. It then flags all these values that are could be outliers.
+
+To read more on how the Boxplot function works in r , click [HERE](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiY5pWEv8WAAxUrQ0EAHXmRAQYQFnoECA4QAQ&url=https%3A%2F%2Fwww.rdocumentation.org%2Fpackages%2FgrDevices%2Fversions%2F3.6.2%2Ftopics%2Fboxplot.stats&usg=AOvVaw2A2dOXQAkt0Z9GA4AvAKgV&opi=89978449)
+
+## What are Expected Values?
+
+The algorithm replaces all possible outliers with NA.
+
+The NA is then imputated using imputation by interpolation.
+
+This uses either linear, spline or stineman interpolation to replace. Regardless of the choice these are based on the values submitted since 2020 by that facility .
+
+Read more about the R function that interpolates the Expected Value [HERE](https://www.rdocumentation.org/packages/imputeTS/versions/3.3/topics/na_interpolation)

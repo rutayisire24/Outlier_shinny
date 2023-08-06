@@ -1,5 +1,6 @@
 ---
 title: "Data Quality Report"
+author: "Ministry of Health"
 output:
   pdf_document:
     extra_dependencies: ["longtable","float"]
@@ -13,20 +14,33 @@ params:
 knitr::opts_chunk$set(echo = FALSE,message = FALSE,warning = FALSE)
 ```
 
-## Data Quality `r params$district` 
+## Data Quality Report for `r params$district`
 
-This is an automated report highlighting Facilities and the possible data elements that could be outliers that need to be verified. 
+This is an automated report highlighting Facilities with possible data elements that could be outliers. 
+Theses might  need to be verified. 
 
 ```{r}
 library(tidyverse)
-library(flextable)
+library(knitr)
 library(readr)
+library(kableExtra)
 library(here)
 library(gsheet)
 
-#data <- read_rds("impute.rds")
+#data <- read_csv("impute.csv")
 
-data <- gsheet2tbl('https://drive.google.com/open?id= 1wewNRiECpefjBjhtaS4Mlp5mnhTpYDa8SiF1agcs4Kk')
+data_im <- gsheet2tbl('https://drive.google.com/open?id= 1lo0YoQPgqm4p8P3WU4D9Sh9NKUw19G_L34Vf1d0TlMc')
+
+data <- data_im %>%
+  filter(district ==  params$district) %>%
+  mutate(period = as.character(period))
+
+#params$district
+
+#"Wakiso District"
+
+data$variable_clean <- round(data$variable_clean)
+data$period <-  lubridate::ymd(data$period)
 
 table <- data %>%
       group_by(facility,flag)  %>%
@@ -39,15 +53,15 @@ table <- data %>%
       filter(Outlier > 0) %>%
     dplyr::arrange(desc(Outlier)) %>%
       rename(
-        `Possible Outliers` = Outlier,
-        `Total Records` = total, 
+        `Possible Outliers (Counts)` = Outlier,
+        `Total Records Reviewed` = total, 
         `% Outliers` = Percentage_outliers) 
 
 facilites <- unique(table$facility)
 
 ```
 
-## Facilties with the highest counts of Possible Outliers
+## Facilties with the highest counts of Possible Outliers in `r params$district` in 2023
 ```{r}
 
 plot_data <- data %>%
@@ -59,13 +73,14 @@ plot_data <- data %>%
              Percentage_outliers = round(Outlier/total*100))%>%
       select(-None) %>%
       filter(Outlier > 0) %>%
-      dplyr::arrange(desc(Outlier))  
-  
+      dplyr::arrange(desc(Outlier))
+
 plot_data %>%
   ungroup() %>%
   slice_max(Outlier,n=10)%>%
       ggplot(aes(x  = reorder(facility,Outlier),y = Outlier))+
       geom_col(fill = "#264653")+
+    geom_text(aes(label = round(Outlier)), hjust = 3, color = "white", size = 4)+
   coord_flip()+
   labs(x = "", y = "Counts")+
   theme_bw()
@@ -73,20 +88,30 @@ plot_data %>%
 ```
 
 
-### Summary of Facilities that have possible Outliers
-There was a total of `r length(facilites)` with possible outlines as seen below; 
+### Summary of Facilities with Possible Outliers
+There was a total of `r length(facilites)` Facilities in `r params$district` had atleast One  possible outlier in 2023 as summarised  below; 
 
 
 ```{r}
-ft <- flextable(table)
-ft <- autofit(ft)
-theme_vanilla(ft)
+# ft <- flextable(table)
+# ft <- autofit(ft)
+# theme_vanilla(ft)
+
+table_format = if(is_html_output()) {
+  "html"
+} else if(is_latex_output()) {
+  "latex"
+}
+
+table %>%
+  kable(format = table_format,booktabs = TRUE) %>%
+    kable_styling(latex_options = c("striped","scale_down", "HOLD_position","repeat_header"))
 
 
 ```
 
 
-## Breakdown of the Possible Outliers per Facility 
+## Breakdown of the Possible Outliers per Facility in 2023
 ```{r}
 
 sum <- data %>%
@@ -94,19 +119,32 @@ sum <- data %>%
       filter(flag == "Outlier") %>%
       select(-c(flag,region,district)) %>%
       relocate(indicator , .before = period) %>%
+      filter(period > "2023-01-01")%>%
       dplyr::arrange(desc(period)) %>%
       rename(
-        `Suggested Imputation` = variable_clean,
+        `Expected Value` = variable_clean,
         `Possible Outlier` = variable,
         `Data Element` = indicator,
-        Month = period)
+        Month = period,
+        Facility = facility
+        )
 
 # kt <- flextable(sum)
 # kt <- autofit(kt)
 # theme_vanilla(kt)
 
-knitr::kable(sum) %>%
-  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+table_format = if(is_html_output()) {
+  "html"
+} else if(is_latex_output()) {
+  "latex"
+}
+
+sum %>%
+  kable(format = table_format,booktabs = TRUE) %>%
+    kable_styling(latex_options = c("striped","scale_down", "HOLD_position"))
+  
+# knitr::kable(sum) %>%
+#   kableExtra::kable_styling(latex_options  c("scale_down", "HOLD_position"))
 ```
 
 
